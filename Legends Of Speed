@@ -5,11 +5,86 @@ local Window = Library.CreateLib("my Friend Hub (MAP Legends Of Speed ⚡ )", "D
 -- สร้างแท็บและส่วนต่าง ๆ
 local TpTab = Window:NewTab("Auto Frame")
 local TpSection = TpTab:NewSection("ครบจบในปุ่มนี้")
+local TppSection = TpTab:NewSection("เส้นชัย (เข้าร่วมการแข่งขันก่อน จึงใช้ปุ่มนี้ )")
+
+
+local Section = TpTab:NewSection("ตู้สุ่มทั้งหมด")
+Section:NewToggle("Blue Crystal", "ToggleInfo", function(state)
+    if state then
+        game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-587, 4, 494)
+    else
+        
+    end
+end)
+Section:NewToggle("Electro Legends Crystal", "ToggleInfo", function(state)
+    if state then
+        game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(4537, 75, 6405)
+    else
+
+    end
+end)
+Section:NewToggle("lnferno Crystal", "ToggleInfo", function(state)
+    if state then
+        game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(1741, 4, 4027)
+    else
+
+    end
+end)
+Section:NewToggle("Lava Crystal", "ToggleInfo", function(state)
+    if state then
+        game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(2205, 4, 4433)
+    else
+
+    end
+end)
+Section:NewToggle("Lightning Crystal", "ToggleInfo", function(state)
+    if state then
+        game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(385, 65, 18)
+    else
+
+    end
+end)
+Section:NewToggle("Purple Crystal", "ToggleInfo", function(state)
+    if state then
+        game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-436, 4, 209)
+    else
+
+    end
+end)
+Section:NewToggle("Red Crystal", "ToggleInfo", function(state)
+    if state then
+        game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-638, 4, 253)
+    else
+
+    end
+end)
+Section:NewToggle("Snow", "ToggleInfo", function(state)
+    if state then
+        game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-347, 4, 2249)
+    else
+
+    end
+end)
+Section:NewToggle("Yellow Crystal", "ToggleInfo", function(state)
+    if state then
+        game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-312, 4, -375)
+    else
+
+    end
+end)
+Section:NewToggle("แข่งขัน", "ToggleInfo", function(state)
+    if state then
+        game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-15, 1, -8677)
+    else
+
+    end
+end)
+
 
 -- ฟังก์ชันเพื่อค้นหาไอเทมทั้งหมดใน Workspace ตามชื่อที่กำหนด
 function findItemsByName(itemName)
     local items = {}
-    
+
     -- ลูปผ่านทุก object ใน Workspace
     for _, object in pairs(game.Workspace:GetDescendants()) do
         -- ตรวจสอบว่าชื่อของ object ตรงกับชื่อไอเทมหรือไม่
@@ -78,8 +153,24 @@ end
 -- เพิ่มการฟังเหตุการณ์เมื่อมีไอเทมใหม่ถูกเพิ่มเข้ามาใน Workspace
 game.Workspace.DescendantAdded:Connect(onItemAdded)
 
+-- ฟังก์ชันสำหรับวาร์ปไปยังไอเทม finishPart
+function teleportToFinishPart()
+    local finishItems = findItemsByName("finishPart") -- ค้นหาไอเทมที่มีชื่อว่า finishPart
+    if #finishItems > 0 then
+        teleportToItem(finishItems[1]) -- วาร์ปไปยัง finishPart ตัวแรกที่พบ
+        print("วาร์ปไปยัง finishPart")
+    else
+        print("ไม่พบ finishPart ใน Workspace")
+    end
+end
+
+-- เพิ่มปุ่มในเมนูสำหรับวาร์ปไปยัง finishPart
+TppSection:NewButton("วาร์ปไปยัง finishPart", "วาร์ปไปยังตำแหน่งของ finishPart", function()
+    teleportToFinishPart()
+end)
+
 -- เพิ่มปุ่มในเมนูสำหรับเปิด/ปิดการวาร์ป
-TpSection:NewToggle("เปิด/ปิดการวาร์ป", "วาร์ปไปยังไอเทมทุก ๆ 15 วินาที", function(state)
+TpSection:NewToggle("ฟามเวล ออโต้ เปิด/ปิด", "วาร์ปไปยังไอเทมทุก ๆ 15 วินาที", function(state)
     isWarping = state
     if isWarping then
         print("เริ่มการวาร์ป")
