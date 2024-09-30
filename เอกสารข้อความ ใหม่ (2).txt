@@ -1,0 +1,90 @@
+-- โหลด Library สำหรับสร้าง UI
+local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/xHeptc/Kavo-UI-Library/main/source.lua"))()
+local Window = Library.CreateLib("my Friend Hub (MAP Legends Of Speed ⚡ )", "DarkTheme")
+
+-- สร้างแท็บและส่วนต่าง ๆ
+local TpTab = Window:NewTab("Auto Frame")
+local TpSection = TpTab:NewSection("ครบจบในปุ่มนี้")
+
+-- ฟังก์ชันเพื่อค้นหาไอเทมทั้งหมดใน Workspace ตามชื่อที่กำหนด
+function findItemsByName(itemName)
+    local items = {}
+    
+    -- ลูปผ่านทุก object ใน Workspace
+    for _, object in pairs(game.Workspace:GetDescendants()) do
+        -- ตรวจสอบว่าชื่อของ object ตรงกับชื่อไอเทมหรือไม่
+        if object.Name == itemName then
+            -- ตรวจสอบว่า object เป็น BasePart หรือ Model ที่มี PrimaryPart
+            if object:IsA("BasePart") then
+                table.insert(items, object)  -- เก็บ object ลงในตาราง
+            elseif object:IsA("Model") and object.PrimaryPart then
+                table.insert(items, object)
+            end
+        end
+    end
+    
+    return items
+end
+
+-- ฟังก์ชันเพื่อวาร์ปผู้เล่นไปยังตำแหน่งของไอเทม
+function teleportToItem(item)
+    local player = game.Players.LocalPlayer
+    if player and player.Character and player.Character.PrimaryPart then
+        if item:IsA("BasePart") then
+            player.Character:SetPrimaryPartCFrame(CFrame.new(item.Position))
+        elseif item:IsA("Model") and item.PrimaryPart then
+            player.Character:SetPrimaryPartCFrame(CFrame.new(item.PrimaryPart.Position))
+        end
+    end
+end
+
+-- สถานะสำหรับการควบคุมการวาร์ป
+local isWarping = false -- เริ่มต้นจากปิดอยู่
+local currentIndex = 1 -- ใช้ติดตามว่าอยู่ที่ตำแหน่งไหน
+local itemName = "Hoop" -- ชื่อไอเทมที่ต้องการค้นหา
+local items = {} -- ตารางเก็บไอเทมที่ค้นพบ
+
+-- ฟังก์ชันสำหรับการวาร์ปไปยังไอเทม
+function startWarping()
+    items = findItemsByName(itemName) -- ค้นหาไอเทมทั้งหมด
+    while isWarping do
+        -- ถ้ามีไอเทมที่พบ
+        if #items > 0 then
+            -- วาร์ปผู้เล่นไปที่ไอเทมในตำแหน่งปัจจุบัน
+            teleportToItem(items[currentIndex])
+            
+            -- อัปเดต index เพื่อวาร์ปไปยังไอเทมถัดไปในครั้งถัดไป
+            currentIndex = currentIndex + 1
+            if currentIndex > #items then
+                currentIndex = 1 -- ถ้าถึงจุดสุดท้ายแล้ว ให้กลับไปที่จุดแรก
+            end
+        else
+            print("ไม่พบไอเทมชื่อ: " .. itemName)
+        end
+        
+        -- รอ 15 วินาทีก่อนจะรันอีกครั้ง
+        wait(0.1)
+    end
+end
+
+-- ฟังก์ชันเพื่อตรวจจับการสร้างไอเทมใหม่
+function onItemAdded(item)
+    if item.Name == itemName then
+        teleportToItem(item)
+        print("วาร์ปไปยังไอเทมใหม่: " .. itemName)
+    end
+end
+
+-- เพิ่มการฟังเหตุการณ์เมื่อมีไอเทมใหม่ถูกเพิ่มเข้ามาใน Workspace
+game.Workspace.DescendantAdded:Connect(onItemAdded)
+
+-- เพิ่มปุ่มในเมนูสำหรับเปิด/ปิดการวาร์ป
+TpSection:NewToggle("เปิด/ปิดการวาร์ป", "วาร์ปไปยังไอเทมทุก ๆ 15 วินาที", function(state)
+    isWarping = state
+    if isWarping then
+        print("เริ่มการวาร์ป")
+        startWarping() -- เริ่มการวาร์ป
+    else
+        print("หยุดการวาร์ป")
+    end
+end)
